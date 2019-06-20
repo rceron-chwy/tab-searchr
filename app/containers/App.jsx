@@ -5,8 +5,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import * as theActions from '../redux/actions';
-
 import style from './styles.css';
+
+import Header from '../components/header';
+import Footer from '../components/footer';
+import Search from '../components/search';
 
 class App extends Component {
   static propTypes = {
@@ -17,7 +20,9 @@ class App extends Component {
   render() {
     return (
       <div className={style.app}>
-        TEST APP
+        <Header title="Tab Searchr" />
+        <Search />
+        <Footer />
       </div>
     );
   }

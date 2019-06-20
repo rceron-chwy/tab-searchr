@@ -1,0 +1,16 @@
+.search {
+  padding: 8px 13px;
+  min-height: 100px;
+}
+
+.searchBar {
+  position: relative;
+  overflow: hidden;
+  height: 50px;
+}
+
+.searchField {
+  font-size: 1.5em;
+  width: 100%;
+  box-sizing: border-box;
+}
