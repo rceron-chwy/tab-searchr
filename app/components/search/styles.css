@@ -1,16 +1,36 @@
 .search {
   padding: 8px 13px;
-  min-height: 100px;
+  /* min-height: 100px; */
 }
 
 .searchBar {
   position: relative;
   overflow: hidden;
-  height: 50px;
 }
 
 .searchField {
   font-size: 1.5em;
   width: 100%;
   box-sizing: border-box;
+  outline: none;
+}
+
+.searchBar button {
+  margin-top: 5px;
+  font-size: 1em;
+  padding: 4px 8px;
+
+  font-weight: bold;
+  outline: none;
+
+  border: 1px solid #04eba1;
+}
+
+.searchBar button:hover {
+  background-color: #04eba1;
+}
+
+.searchBar button:active {
+  background-color:  #23be8d;
+
 }
