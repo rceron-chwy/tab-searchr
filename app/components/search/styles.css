@@ -9,21 +9,26 @@
 .searchBar {
   position: relative;
   overflow: hidden;
+  display: flex;
+  justify-content: space-between;
 }
 
 .searchField {
-  font-size: 1.5em;
-  width: 100%;
+  font-size: 1.2em;
+  width: 400px;
   box-sizing: border-box;
   outline: none;
+  border: 1px solid #bbb;
 }
 
 .searchBar button {
-  margin-top: 5px;
-  font-size: 1em;
-  padding: 4px 8px;
+  /* width: 200px; */
+  font-size: 1.2em;
+  padding: 0 8px;
+  box-sizing: border-box;
+  margin-left: 5px;
 
-  font-weight: bold;
+  /* font-weight: bold; */
   outline: none;
 
   border: 1px solid #04eba1;
@@ -44,14 +49,20 @@
   overflow: hidden;
   text-overflow: ellipsis;
 } */
+
 .results .info {
   font-weight: 400;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
 }
-.results a {
-  text-decoration: none;
+.results .back {
+  margin: 10px 0;
   cursor: pointer;
   color: #333;
+}
+.results a {
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .results a:hover {

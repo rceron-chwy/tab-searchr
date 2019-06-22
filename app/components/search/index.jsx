@@ -4,6 +4,18 @@ import React, { Component } from 'react';
 
 import style from './styles.css';
 
+const INITIAL_STATE = {
+  q: '',
+  results: null
+};
+
+const queries = [
+  { active: true, currentWindow: true },
+  { active: false, currentWindow: true },
+  { active: true, currentWindow: false },
+  { active: false, currentWindow: false }
+];
+
 class Search extends Component {
   static propTypes = {
   };
@@ -11,59 +23,58 @@ class Search extends Component {
   constructor(props) {
     super(props);
 
+    this.input = React.createRef();
+
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
+    this.handleReset = this.handleReset.bind(this);
 
-    this.state = {
-      q: '',
-      results: null
-    };
-    // this.addListener();
+    this.state = INITIAL_STATE;
   }
 
-  // addListener() {
-  //   chrome.runtime.onMessage.addListener(
-  //     (message, sender, sendResponse) => {
-  //       console.log('MESSAGE', message);
-  //       if (message.method === 'getText') {
-  //         sendResponse({ data: document.all[0].innerText, method: 'getText' }); //same as innerText
-  //       }
-  //     });
-  //   console.log(this);
-  // }
+  componentDidMount() {
+    window.addEventListener('keypress', this.handleKeyPress);
+    this.input.current.focus();
+  }
 
-  // console.log("Query terms: ", this.state.q);
-  // chrome.tabs.executeScript({
-  //   code: 'var content = document.body.textContent; content'
-  // }, (response) => {
-  //   // const containsQuery = (response && response.search(this.state.q) > 0) || false;
-  //   // console.log(t.url, containsQuery, response);
-  //   console.log(response);
-  // });
+  componentWillUnmount() {
+    window.removeEventListener('keypress', this.handleKeyPress);
+  }
+
+  handleKeyPress = (e) => {
+    const key = e.which || e.keyCode;
+    if (key === 13) {
+      this.handleSearch();
+    }
+  }
 
   handleSearch() {
-    const results = [];
-    chrome.tabs.query({ active: false, currentWindow: false }, (tabs) => {
-      tabs.forEach((t) => {
-        // chrome.tabs.sendMessage(t.id, { method: 'read_html' }, response => console.log(t.url, response));
+    const { results } = this.state;
+    const $results = [];
+    const term = new RegExp(this.state.q, 'ig');
 
-        results.push(new Promise((resolve) => {
-          chrome.tabs.executeScript(t.id, {
-            code: 'document.body.textContent'
-          }, (response) => {
-            const containsQuery = (response && response[0] && response[0].search(this.state.q) > 0) || false;
-            if (containsQuery) {
-              const oneResult = { id: t.id, matches: true, url: t.url, windowId: t.windowId, title: t.title };
-              resolve(oneResult);
-            }
-            resolve({ id: t.id, matches: false });
+    queries.forEach((query) => {
+      chrome.tabs.query(query, (tabs) => {
+        tabs.forEach((t) => {
+          $results.push(new Promise((resolve) => {
+            chrome.tabs.executeScript(t.id, {
+              code: 'document.body.outerText'
+            }, (response) => {
+              if (response && response[0] && response[0].search(term) > 0) {
+                resolve({ id: t.id, matches: true, url: t.url, windowId: t.windowId, title: t.title });
+              } else {
+                resolve({ id: t.id, matches: false });
+              }
+            });
+          }));
+        });
+        Promise
+          .all($results)
+          .then((values) => {
+            const matches = values.filter(v => v.matches);
+            const nextResults = Array.prototype.concat([], results || [], matches);
+            this.setState({ results: nextResults });
           });
-        }));
-      });
-
-      Promise.all(results)
-      .then((values) => {
-        this.setState({ results: values.filter(v => v.matches) });
       });
     });
   }
@@ -73,9 +84,12 @@ class Search extends Component {
   }
 
   handleTabSelect(result) {
-    chrome.windows.update(result.windowId, { focused: true }, () => {
-      chrome.tabs.update(result.id, { active: true });
-    });
+    chrome.windows.update(result.windowId, { focused: true });
+    chrome.tabs.update(result.id, { active: true, highlighted: true });
+  }
+
+  handleReset() {
+    this.setState(INITIAL_STATE);
   }
 
   renderResults() {
@@ -91,7 +105,8 @@ class Search extends Component {
 
     return (
       <div className={style.results}>
-        <div className={style.info}> Displaying results for: &quot;{q}&quot;</div>
+        <div className={style.info}>Displaying results for: &quot;{q}&quot;</div>
+        <div className={style.back} onClick={this.handleReset}>Back</div>
         <ol>
           {links}
         </ol>
@@ -103,6 +118,7 @@ class Search extends Component {
     return (
       <div className={style.searchBar}>
         <input
+          ref={this.input}
           type="text"
           className={style.searchField}
           placeholder="kubernetes..."

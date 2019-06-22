@@ -40,8 +40,6 @@ exports.copyAssets = (type) => {
   const env = type === 'build' ? 'prod' : type;
   rm('-rf', type);
   mkdir(type);
-  mkdir(`${type}/content`);
-  cp('chrome/extension/bundle/content/*', `${type}/content/`);
   cp(`chrome/manifest.${env}.json`, `${type}/manifest.json`);
   cp('-R', 'chrome/assets/*', type);
   exec(`pug -O "{ env: '${env}' }" -o ${type} chrome/views/`);
