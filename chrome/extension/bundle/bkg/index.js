@@ -42,6 +42,12 @@ promisifyAll(chrome.storage, [
  *
  * The callback function is called upon completion of the request */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  log('LISTENER FOR >>>>>>>>>', request, sender);
+  if (request.url) fetchX(request, sendResponse);
+  else sendResponse({ error: 'Invalid Request' });
+});
+
+const fetchX = (request, sendResponse) => {
   log('Listener for', request.url);
   fetchTimeout(request.url, {
     method: 'POST',
@@ -62,6 +68,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
 
   return true;
-});
+}
 
 // require('./inject');
