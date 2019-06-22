@@ -41,6 +41,13 @@ class Search extends Component {
     window.removeEventListener('keypress', this.handleKeyPress);
   }
 
+  constructRegex = () => {
+    const q = this.state.q;
+    const terms = q.split(/\s+/).join('.');
+    const regex = new RegExp(terms, 'ig');
+    return regex;
+  }
+
   handleKeyPress = (e) => {
     const key = e.which || e.keyCode;
     if (key === 13) {
@@ -51,7 +58,7 @@ class Search extends Component {
   handleSearch() {
     const { results } = this.state;
     const $results = [];
-    const term = new RegExp(this.state.q, 'ig');
+    const regex = this.constructRegex();
 
     queries.forEach((query) => {
       chrome.tabs.query(query, (tabs) => {
@@ -60,7 +67,7 @@ class Search extends Component {
             chrome.tabs.executeScript(t.id, {
               code: 'document.body.outerText'
             }, (response) => {
-              if (response && response[0] && response[0].search(term) > 0) {
+              if (response && response[0] && response[0].search(regex) > 0) {
                 resolve({ id: t.id, matches: true, url: t.url, windowId: t.windowId, title: t.title });
               } else {
                 resolve({ id: t.id, matches: false });
