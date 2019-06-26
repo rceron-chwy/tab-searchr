@@ -36,12 +36,12 @@ class Search extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyPress);
+    window.addEventListener('keydown', this.handleKeyDown);
     this.input.current.focus();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyPress);
+    window.removeEventListener('keydown', this.handleKeyDown);
   }
 
   constructRegex = () => {
@@ -51,8 +51,7 @@ class Search extends Component {
     return regex;
   }
 
-  handleKeyPress = (e) => {
-    console.log('KEY PRESS', e.key);
+  handleKeyDown = (e) => {
     if (this.state.view === 'S') {
       if (e.key === 'Enter') this.handleSearch();
     } else {
@@ -61,7 +60,11 @@ class Search extends Component {
       if (e.key === 'Backspace') {
         this.handleBack();
         e.preventDefault();
-      } else if (e.key === 'ArrowUp') {
+      } else if (e.key === 'Enter' && cursor >= 0 && cursor < results.length - 1) {
+        const result = results[cursor];
+        console.log('RESULT', result);
+        this.handleTabSelect(result);
+      } else if (e.key === 'ArrowUp' && cursor >= 0) {
         this.setState(prevState => ({ cursor: prevState.cursor - 1 }));
       } else if (e.key === 'ArrowDown' && cursor < results.length - 1) {
         this.setState(prevState => ({ cursor: prevState.cursor + 1 }));
@@ -127,13 +130,14 @@ class Search extends Component {
 
     const links = results.map((result, i) => {
       const className = cursor === i
-        ? `${style.resultItem} ${style.resultActive}`
-        : `${style.resultItem}`;
+        ? `${style.activeItem}`
+        : null;
 
       return (
         <li
           key={result.id}
           className={className}
+          onMouseEnter={() => this.setState({ cursor: i })}
         >
           <a href={result.url} alt={result.title} onClick={() => this.handleTabSelect(result)}>{result.title}</a>
         </li>
@@ -142,9 +146,13 @@ class Search extends Component {
 
     return (
       <div className={style.results}>
-        <div className={style.back} onClick={this.handleBack}>&lt;&lt;Back</div>
-        <div className={style.info}>Displaying results for: &quot;{q}&quot;</div>
-        <ol>{links}</ol>
+        <div className={style.header}>
+          <span className={style.info}>Displaying results for: &quot;{q}&quot;</span>
+          <span className={style.back} onClick={this.handleBack}>Go Back</span>
+        </div>
+        <div className={style.items}>
+          <ol>{links}</ol>
+        </div>
       </div>
     );
   }
