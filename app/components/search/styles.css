@@ -1,7 +1,5 @@
 .searchWrapper {
   padding: 8px 13px;
-  /* overflow: hidden; */
-
 }
 
 .searchBar {
@@ -12,25 +10,22 @@
 }
 
 .searchField {
-  font-size: 1.2em;
+  padding: 1px 5px;
+  font-size: 1.3em;
   width: 400px;
   box-sizing: border-box;
   outline: none;
-  border: 1px solid #bbb;
+  border: 2px solid #bbb;
   color: #4d4d4d;
 }
 
 .searchBar button {
-  /* width: 200px; */
-  font-size: 1.2em;
+  font-size: 1.3em;
   padding: 0 8px;
   box-sizing: border-box;
   margin-left: 5px;
-
-  /* font-weight: bold; */
   outline: none;
-
-  border: 1px solid #04eba1;
+  border: 2px solid #04eba1;
 }
 
 .searchBar button:hover {
@@ -44,15 +39,14 @@
 .results {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  height: 400px;
+  max-height: 400px;
 }
 
 .results .header {
   flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
-  padding: 5px;
+  margin-bottom: 8px;
 }
 
 .results .items {
@@ -65,57 +59,62 @@
   background-color: #ccc;
 }
 
+.favIconUrl {
+  width: 15px;
+  height: 15px;
+  margin-right: 8px;
+}
+
 .results .info {
-  font-weight: 400;
+  font-weight: bold;
 }
 .results .back {
   cursor: pointer;
   text-transform: uppercase;
+  font-weight: bold;
 }
-.results a {
+.results li a {
   color: #4d4d4d;
   text-decoration: none;
   cursor: pointer;
   font-weight: 300;
-}
 
-/* .results a:hover {
-  font-weight: 400;
-  background: #bbb;
-} */
-
-.results ol {
-  list-style: none;
-  counter-reset: item;
-  padding: 0;
-  padding-left: 6px;
-}
-
-.results li {
   counter-increment: item;
-  margin-bottom: 10px;
-
   width: 440px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.results ol {
+  list-style: none;
+  counter-reset: item;
+  padding: 0;
+  margin: 0;
+  /* padding-left: 6px; */
+}
+
+.results li {
+  display: flex;
+  padding: 5px 0;
+}
+
 .results li:hover {
   background-color: #ccc;
 }
 
-.results li:before {
+/* .results li:before {
   margin-right: 5px;
   content: counter(item);
   background: #04eba1;
   border-radius: 100%;
   color: #444;
-  /* font-weight: bold; */
   width: 1.2em;
   text-align: center;
   display: inline-block;
   vertical-align: middle;
   font-size: 12px;
   width: 18px;
-}
+} */
+
+

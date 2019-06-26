@@ -2,8 +2,11 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import uniqBy from 'lodash/uniqBy';
+import debug from 'debug';
 
 import style from './styles.css';
+
+const log = debug('rfc.search.index');
 
 const INITIAL_STATE = {
   q: '',
@@ -20,8 +23,6 @@ const queries = [
 ];
 
 class Search extends Component {
-  static propTypes = {
-  };
 
   constructor(props) {
     super(props);
@@ -45,13 +46,12 @@ class Search extends Component {
   }
 
   constructRegex = () => {
-    const q = this.state.q;
-    const terms = q.split(/\s+/).join('.');
-    const regex = new RegExp(terms, 'ig');
-    return regex;
+    const terms = this.state.q.split(/\s+/).join('.');
+    return new RegExp(terms, 'ig');
   }
 
   handleKeyDown = (e) => {
+    if (e.key === 'Escape') window.close();
     if (this.state.view === 'S') {
       if (e.key === 'Enter') this.handleSearch();
     } else {
@@ -61,8 +61,7 @@ class Search extends Component {
         this.handleBack();
         e.preventDefault();
       } else if (e.key === 'Enter' && cursor >= 0 && cursor < results.length - 1) {
-        const result = results[cursor];
-        this.handleTabSelect(result);
+        this.handleTabSelect(results[cursor]);
       } else if (e.key === 'ArrowUp' && cursor >= 0) {
         this.setState(prevState => ({ cursor: prevState.cursor - 1 }));
       } else if (e.key === 'ArrowDown' && cursor < results.length - 1) {
@@ -84,9 +83,9 @@ class Search extends Component {
               code: 'document.body.outerText'
             }, (response) => {
               if (response && response[0] && response[0].search(regex) > 0) {
-                resolve({ id: t.id, matches: true, url: t.url, windowId: t.windowId, title: t.title });
+                resolve({ matches: true, ...t });
               } else {
-                resolve({ id: t.id, matches: false });
+                resolve({ matches: false, ...t });
               }
             });
           }));
@@ -110,16 +109,22 @@ class Search extends Component {
   }
 
   handleTabSelect(result) {
-    chrome.windows.update(result.windowId, { focused: true });
-    chrome.tabs.update(result.id, { active: true, highlighted: true });
+    log('handleTabSelect:', result);
+    const { id, windowId, discarded } = result;
+
+    chrome.windows.update(windowId, { focused: true });
+    chrome.tabs.update(id, { active: true, highlighted: true });
+    chrome.tabs.highlight({ windowId, tabs: [id] });
+
+    if (discarded) {
+      log('handleTabSelect: ', 'reloading inactive tab');
+      chrome.tabs.reload(id);
+    }
+    // window.close();
   }
 
   handleBack() {
-    this.setState({
-      results: null,
-      view: 'S',
-      cursor: -1
-    }, () => {
+    this.setState({ results: null, view: 'S', cursor: -1 }, () => {
       this.input.current.focus();
     });
   }
@@ -128,9 +133,7 @@ class Search extends Component {
     const { q, results, cursor } = this.state;
 
     const links = results.map((result, i) => {
-      const className = cursor === i
-        ? `${style.activeItem}`
-        : null;
+      const className = cursor === i ? `${style.activeItem}` : null;
 
       return (
         <li
@@ -138,6 +141,7 @@ class Search extends Component {
           className={className}
           onMouseEnter={() => this.setState({ cursor: i })}
         >
+          <img className={style.favIconUrl} src={result.favIconUrl} />
           <a href={result.url} alt={result.title} onClick={() => this.handleTabSelect(result)}>{result.title}</a>
         </li>
       );
@@ -163,7 +167,7 @@ class Search extends Component {
           ref={this.input}
           type="text"
           className={style.searchField}
-          placeholder="kubernetes..."
+          placeholder="just type something..."
           value={this.state.q}
           onChange={this.handleQueryChange}
         />

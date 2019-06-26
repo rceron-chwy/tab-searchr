@@ -20,7 +20,7 @@ class App extends Component {
   render() {
     return (
       <div className={style.app}>
-        <Header title="Tab Searchr" />
+        <Header title="tabSearch -> r" />
         <Search />
         <Footer />
       </div>
