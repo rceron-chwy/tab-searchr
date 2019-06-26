@@ -1,12 +1,15 @@
 /* eslint-disable max-len */
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
+import uniqBy from 'lodash/uniqBy';
 
 import style from './styles.css';
 
 const INITIAL_STATE = {
   q: '',
-  results: null
+  results: null,
+  view: 'S',
+  cursor: -1
 };
 
 const queries = [
@@ -27,18 +30,18 @@ class Search extends Component {
 
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    this.handleReset = this.handleReset.bind(this);
+    this.handleBack = this.handleBack.bind(this);
 
     this.state = INITIAL_STATE;
   }
 
   componentDidMount() {
-    window.addEventListener('keypress', this.handleKeyPress);
+    window.addEventListener('keydown', this.handleKeyPress);
     this.input.current.focus();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keypress', this.handleKeyPress);
+    window.removeEventListener('keydown', this.handleKeyPress);
   }
 
   constructRegex = () => {
@@ -49,9 +52,20 @@ class Search extends Component {
   }
 
   handleKeyPress = (e) => {
-    const key = e.which || e.keyCode;
-    if (key === 13) {
-      this.handleSearch();
+    console.log('KEY PRESS', e.key);
+    if (this.state.view === 'S') {
+      if (e.key === 'Enter') this.handleSearch();
+    } else {
+      const { cursor, results } = this.state;
+
+      if (e.key === 'Backspace') {
+        this.handleBack();
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        this.setState(prevState => ({ cursor: prevState.cursor - 1 }));
+      } else if (e.key === 'ArrowDown' && cursor < results.length - 1) {
+        this.setState(prevState => ({ cursor: prevState.cursor + 1 }));
+      }
     }
   }
 
@@ -80,7 +94,10 @@ class Search extends Component {
           .then((values) => {
             const matches = values.filter(v => v.matches);
             const nextResults = Array.prototype.concat([], results || [], matches);
-            this.setState({ results: nextResults });
+            this.setState({
+              results: uniqBy(nextResults, 'id'),
+              view: 'R'
+            });
           });
       });
     });
@@ -95,16 +112,29 @@ class Search extends Component {
     chrome.tabs.update(result.id, { active: true, highlighted: true });
   }
 
-  handleReset() {
-    this.setState(INITIAL_STATE);
+  handleBack() {
+    this.setState({
+      results: null,
+      view: 'S',
+      cursor: -1
+    }, () => {
+      this.input.current.focus();
+    });
   }
 
   renderResults() {
-    const { q, results } = this.state;
+    const { q, results, cursor } = this.state;
 
-    const links = results.map((result) => {
+    const links = results.map((result, i) => {
+      const className = cursor === i
+        ? `${style.resultItem} ${style.resultActive}`
+        : `${style.resultItem}`;
+
       return (
-        <li key={result.id} className={style.resultItem}>
+        <li
+          key={result.id}
+          className={className}
+        >
           <a href={result.url} alt={result.title} onClick={() => this.handleTabSelect(result)}>{result.title}</a>
         </li>
       );
@@ -112,11 +142,9 @@ class Search extends Component {
 
     return (
       <div className={style.results}>
+        <div className={style.back} onClick={this.handleBack}>&lt;&lt;Back</div>
         <div className={style.info}>Displaying results for: &quot;{q}&quot;</div>
-        <div className={style.back} onClick={this.handleReset}>Back</div>
-        <ol>
-          {links}
-        </ol>
+        <ol>{links}</ol>
       </div>
     );
   }
@@ -138,11 +166,11 @@ class Search extends Component {
   }
 
   render() {
-    const { results } = this.state;
+    const { view } = this.state;
     return (
       <div className={style.searchWrapper}>
-        {!results && this.renderSearchField()}
-        {results && this.renderResults()}
+        {view === 'S' && this.renderSearchField()}
+        {view === 'R' && this.renderResults()}
       </div>
     );
   }
