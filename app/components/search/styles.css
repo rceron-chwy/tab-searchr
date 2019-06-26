@@ -63,27 +63,35 @@
   color: #333;
   text-decoration: none;
   cursor: pointer;
+  font-weight: 300;
 }
 
-.results a:hover {
+/* .results a:hover {
   font-weight: 400;
-}
+  background: #bbb;
+} */
 
 .results ol {
   list-style: none;
   counter-reset: item;
   padding: 0;
-  padding-left: 10px;
+  padding-left: 6px;
 }
+
 .results li {
   counter-increment: item;
   margin-bottom: 10px;
 
-  width: 430px;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.results li:hover {
+  background-color: #eee;
+}
+
 .results li:before {
   margin-right: 5px;
   content: counter(item);
