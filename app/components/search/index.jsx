@@ -62,7 +62,6 @@ class Search extends Component {
         e.preventDefault();
       } else if (e.key === 'Enter' && cursor >= 0 && cursor < results.length - 1) {
         const result = results[cursor];
-        console.log('RESULT', result);
         this.handleTabSelect(result);
       } else if (e.key === 'ArrowUp' && cursor >= 0) {
         this.setState(prevState => ({ cursor: prevState.cursor - 1 }));
