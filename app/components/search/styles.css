@@ -1,5 +1,5 @@
 .searchWrapper {
-  padding: 8px 13px;
+  padding: 10px 13px;
 }
 
 .searchBar {
@@ -9,31 +9,46 @@
   justify-content: space-between;
 }
 
+.actionsBar {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 8px;
+}
+
+.actionsBar > button {
+  margin-right: 5px;
+}
+
 .searchField {
-  padding: 1px 5px;
-  font-size: 1.3em;
-  width: 400px;
+  padding: 3px 4px;
+  font-size: 16px;
+  width: 100%;
   box-sizing: border-box;
   outline: none;
-  border: 2px solid #bbb;
-  color: #4d4d4d;
+  border: 1px solid #bbb;
+  color: #666;
 }
 
-.searchBar button {
-  font-size: 1.3em;
-  padding: 0 8px;
+.searchWrapper button {
+  font-size: 11px;
+  padding: 4px 0;
   box-sizing: border-box;
-  margin-left: 5px;
+  background-color: #64dd17;
+  text-transform: uppercase;
+  width: 100px;
+  color: #000;
+  border: none;
   outline: none;
-  border: 2px solid #04eba1;
 }
 
-.searchBar button:hover {
-  background-color: #04eba1;
+.searchWrapper button:hover {
+  background-color: #9cff57;
+  color: #000;
 }
 
-.searchBar button:active {
-  background-color:  #23be8d;
+.searchWrapper button:active {
+  background-color:  #1faa00;
+  color: #fff;
 }
 
 .results {
@@ -52,11 +67,11 @@
 .results .items {
   flex: 1 1 auto;
   position: relative;
-  overflow: auto;
+  overflow-y: scroll;
 }
 
 .activeItem {
-  background-color: #ccc;
+  background-color: #9cff57;
 }
 
 .favIconUrl {
@@ -97,24 +112,25 @@
 .results li {
   display: flex;
   padding: 5px 0;
+  overflow: hidden;
 }
 
 .results li:hover {
-  background-color: #ccc;
+  background-color: #9cff57;
 }
 
-/* .results li:before {
+.results li:before {
   margin-right: 5px;
-  content: counter(item);
-  background: #04eba1;
+  content: counter(item) ".";
+  /* background: #1faa00; */
   border-radius: 100%;
-  color: #444;
-  width: 1.2em;
+  color: #1faa00;
+  /* width: 1.2em; */
   text-align: center;
   display: inline-block;
   vertical-align: middle;
   font-size: 12px;
-  width: 18px;
-} */
+  /* width: 18px; */
+}
 
 

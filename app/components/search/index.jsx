@@ -1,6 +1,8 @@
+/* eslint-disable jsx-a11y/img-has-alt */
 /* eslint-disable max-len */
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import uniqBy from 'lodash/uniqBy';
 import debug from 'debug';
 
@@ -12,7 +14,7 @@ const INITIAL_STATE = {
   q: '',
   results: null,
   view: 'S',
-  cursor: -1
+  cursor: 0
 };
 
 const queries = [
@@ -27,18 +29,21 @@ class Search extends Component {
   constructor(props) {
     super(props);
 
-    this.input = React.createRef();
+    this.inputRef = React.createRef();
+    this.itemRefs = new Map();
 
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.handleBack = this.handleBack.bind(this);
+    this.handleReloadTabs = this.handleReloadTabs.bind(this);
+    this.scrollIntoView = this.scrollIntoView.bind(this);
 
     this.state = INITIAL_STATE;
   }
 
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
-    this.input.current.focus();
+    this.inputRef.current.focus();
   }
 
   componentWillUnmount() {
@@ -60,14 +65,38 @@ class Search extends Component {
       if (e.key === 'Backspace') {
         this.handleBack();
         e.preventDefault();
-      } else if (e.key === 'Enter' && cursor >= 0 && cursor < results.length - 1) {
+      } else if (e.key === 'Enter' && cursor >= 0 && cursor <= results.length - 1) {
         this.handleTabSelect(results[cursor]);
-      } else if (e.key === 'ArrowUp' && cursor >= 0) {
+      } else if (e.key === 'ArrowUp' && cursor > 0) {
         this.setState(prevState => ({ cursor: prevState.cursor - 1 }));
+        this.scrollIntoView();
       } else if (e.key === 'ArrowDown' && cursor < results.length - 1) {
         this.setState(prevState => ({ cursor: prevState.cursor + 1 }));
+        this.scrollIntoView();
       }
     }
+  }
+
+  scrollIntoView() {
+    const { cursor } = this.state;
+    const node = this.itemRefs.get(cursor);
+    if (node) {
+      // eslint-disable-next-line react/no-find-dom-node
+      ReactDOM.findDOMNode(node).scrollIntoView({
+        block: 'end',
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  handleReloadTabs() {
+    queries.forEach((query) => {
+      chrome.tabs.query(query, (tabs) => {
+        tabs.forEach((t) => {
+          chrome.tabs.reload(t.id);
+        });
+      });
+    });
   }
 
   handleSearch() {
@@ -125,7 +154,7 @@ class Search extends Component {
 
   handleBack() {
     this.setState({ results: null, view: 'S', cursor: -1 }, () => {
-      this.input.current.focus();
+      this.inputRef.current.focus();
     });
   }
 
@@ -133,10 +162,12 @@ class Search extends Component {
     const { q, results, cursor } = this.state;
 
     const links = results.map((result, i) => {
-      const className = cursor === i ? `${style.activeItem}` : null;
+      const active = cursor === i;
+      const className = active ? `${style.activeItem}` : null;
 
       return (
         <li
+          ref={element => this.itemRefs.set(i, element)}
           key={result.id}
           className={className}
           onMouseEnter={() => this.setState({ cursor: i })}
@@ -162,16 +193,21 @@ class Search extends Component {
 
   renderSearchField() {
     return (
-      <div className={style.searchBar}>
-        <input
-          ref={this.input}
-          type="text"
-          className={style.searchField}
-          placeholder="just type something..."
-          value={this.state.q}
-          onChange={this.handleQueryChange}
-        />
-        <button onClick={this.handleSearch}>Search</button>
+      <div>
+        <div className={style.searchBar}>
+          <input
+            ref={this.inputRef}
+            type="text"
+            className={style.searchField}
+            placeholder="just type something..."
+            value={this.state.q}
+            onChange={this.handleQueryChange}
+          />
+        </div>
+        <div className={style.actionsBar}>
+          <button onClick={this.handleSearch}>Search</button>
+          <button onClick={this.handleReloadTabs}>Reload Tabs</button>
+        </div>
       </div>
     );
   }
