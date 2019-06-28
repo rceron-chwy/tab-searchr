@@ -1,18 +1,18 @@
 {
-  "version": "0.1.0",
-  "name": "TabSearchR",
+  "version": "1.0.0",
+  "name": "tabSearch -> r",
   "manifest_version": 2,
-  "description": "TabSearchR",
+  "description": "Search all open tabs.",
   "browser_action": {
-    "default_icon": "img/icon-128.png",
-    "default_title": "TabSearchR",
+    "default_icon": "img/tabSearchr_128.png",
+    "default_title": "tabSearch -> r",
     "default_popup": "popup.html"
   },
   "icons": {
-    "16": "img/icon-16.png",
-    "48": "img/icon-48.png",
-    "64": "img/icon-64.png",
-    "128": "img/icon-128.png"
+    "16": "img/tabSearchr_16.png",
+    "48": "img/tabSearchr_48.png",
+    "64": "img/tabSearchr_64.png",
+    "128": "img/tabSearchr_128.png"
   },
   "web_accessible_resources": [
     "js/*.png"

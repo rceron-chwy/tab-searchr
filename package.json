@@ -1,6 +1,6 @@
 {
   "name": "tab-searchr",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "TabSearchR Chrome Extension",
   "scripts": {
     "dev": "cross-env NODE_ENV=development node scripts/dev",
@@ -14,13 +14,13 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git@github.com:rfceron/tab-searchr.git"
   },
   "keywords": [
     "chrome",
     "extension"
   ],
-  "author": "rceron <rfceron@gmail.com>",
+  "author": "Rafael Ceron <rfceron@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.3.15",
