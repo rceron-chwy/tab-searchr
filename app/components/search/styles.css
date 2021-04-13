@@ -33,22 +33,22 @@
   font-size: 11px;
   padding: 4px 0;
   box-sizing: border-box;
-  background-color: #64dd17;
+  background-color: #3533a5;
   text-transform: uppercase;
   width: 100px;
-  color: #000;
+  color: #ddd;
   border: none;
   outline: none;
 }
 
 .searchWrapper button:hover {
-  background-color: #9cff57;
-  color: #000;
+  background-color: #3b38c2d8;
+  color: #ddd;
 }
 
 .searchWrapper button:active {
-  background-color:  #1faa00;
-  color: #fff;
+  background-color:  #4745c0d8;
+  color: #ddd;
 }
 
 .results {
@@ -71,7 +71,7 @@
 }
 
 .activeItem {
-  background-color: #9cff57;
+  background-color: #ddd;
 }
 
 .favIconUrl {
@@ -89,9 +89,8 @@
   font-weight: bold;
 }
 .results li a {
-  color: #4d4d4d;
+  color: #ddd;
   text-decoration: none;
-  cursor: pointer;
   font-weight: 300;
 
   counter-increment: item;
@@ -99,6 +98,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.results li {
+  cursor: pointer;
 }
 
 .results ol {
@@ -116,15 +119,20 @@
 }
 
 .results li:hover {
-  background-color: #9cff57;
+  background-color: #ddd;
+}
+
+
+.results .activeItem a,
+.results li:hover > a {
+  color: #222831;
 }
 
 .results li:before {
   margin-right: 5px;
   content: counter(item) ".";
-  /* background: #1faa00; */
   border-radius: 100%;
-  color: #1faa00;
+  color: #605eced8;
   /* width: 1.2em; */
   text-align: center;
   display: inline-block;

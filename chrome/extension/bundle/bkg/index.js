@@ -28,9 +28,9 @@ promisifyAll(chrome, [
   // 'contextMenus'
 ]);
 
-promisifyAll(chrome.storage, [
-  'sync',
-]);
+// promisifyAll(chrome.storage, [
+//   'sync',
+// ]);
 
 
 /**

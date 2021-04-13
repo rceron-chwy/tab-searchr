@@ -1,9 +1,9 @@
 .footer {
-  border-top: 1px solid  rgba(153, 153, 153, 0.644);
+  border-top: 1px solid  #585858;
   box-shadow: 1px;
   display: flex;
   justify-content: space-between;
   padding: 5px 10px;
-  color: #999;
+  color: #ddd;
   font-size: 0.8em
 }
